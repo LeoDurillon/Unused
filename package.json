@@ -1,0 +1,18 @@
+{
+  "name": "unused",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun ./build.config.ts",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@leodurillon/bun-parser": "^0.1.1"
+  }
+}
