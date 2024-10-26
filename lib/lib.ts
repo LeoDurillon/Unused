@@ -10,11 +10,16 @@ export default class ImporterCheck {
     this.checked = new Set();
   }
 
-  public async checkIsUsed(entry: string): Promise<Set<string>> {
+  checkFile(entry: string) {
     if (this.checked.has(entry)) {
-      return new Set();
+      return true;
     }
     this.checked.add(entry);
+  }
+
+  public async checkIsUsed(entry: string): Promise<Set<string>> {
+    if (this.checkFile(entry)) return new Set();
+
     const imports = await this.getImportsLine(entry);
     let checkedPath: Set<string> = new Set();
     for (const imp of imports) {
@@ -22,7 +27,7 @@ export default class ImporterCheck {
       if (!imp) {
         continue;
       }
-      const modifiedImp = this.findMatchingShortcut(imp, entry);
+      const modifiedImp = this.parsePath(imp, entry);
       const goBackLength = this.countGoBack(modifiedImp);
       const path = modifiedImp.match(/[(\.\.\/)]+(\/.+)/);
       if (!path) {
@@ -59,17 +64,21 @@ export default class ImporterCheck {
   }
 
   findMatchingShortcut(path: string, currentPath: string) {
-    if (!path.startsWith("~")) return path;
     const filteredShortCut = this.shortcut.filter((e) =>
       path.startsWith(e.short)
     );
-    let shortcut = filteredShortCut.sort((a, b) =>
+    const shortcut = filteredShortCut.sort((a, b) =>
       a.short.length > b.short.length ? -1 : 1
     )[0];
 
-    const fullPathSplitted = path
+    return path
       .replace(shortcut.short, this.folder + shortcut.long.split(".")[1])
       .split("/");
+  }
+
+  parsePath(path: string, currentPath: string) {
+    if (!path.startsWith("~")) return path;
+    const fullPathSplitted = this.findMatchingShortcut(path, currentPath);
     const splittedCurrent = currentPath.split("/");
     const finalPath: string[] = [];
     for (let i = 0; i < fullPathSplitted.length; i++) {
@@ -88,11 +97,6 @@ export default class ImporterCheck {
     const importLines = (await Bun.file(file).text())
       .split("\n")
       .filter((line) => line.startsWith("import"));
-    if (!importLines) {
-      console.log("No import line");
-      console.log(file);
-      console.log(await Bun.file(file).text());
-    }
     const regExp = new RegExp(/['"]([~.//].+)['"]/);
     const imports = importLines
       .map((line) => {
