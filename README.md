@@ -4,7 +4,7 @@ Track unused file in project
 
 ## Installation
 
-WARNING: this project use the Bun-Parser library to parse terminal argument which is a private library use the compiled version in the dist folder
+WARNING: this project use the Bun-Parser library to parse terminal argument which is a private library to use run the compiled version in the dist folder
 
 If you want to modify this program to follow your own configuration use your own parser and replace the BunParser in index.ts
 
