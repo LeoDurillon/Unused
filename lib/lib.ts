@@ -27,9 +27,9 @@ export default class ImporterCheck {
       if (!imp) {
         continue;
       }
-      const modifiedImp = this.parsePath(imp, entry);
-      const goBackLength = this.countGoBack(modifiedImp);
-      const path = modifiedImp.match(/[(\.\.\/)]+(\/.+)/);
+      const fullPath = this.parsePath(imp, entry);
+      const goBackLength = this.countGoBack(fullPath);
+      const path = fullPath.match(/[(\.\.\/)]+(\/.+)/);
       if (!path) {
         continue;
       }
