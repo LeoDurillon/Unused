@@ -1,13 +1,26 @@
 {
-  "name": "unused",
-  "module": "index.ts",
-  "type": "module",
+  "name": "@leodurillon/unused",
+  "version": "0.0.1",
   "scripts": {
     "build": "bun ./build.config.ts",
     "test": "bun test"
   },
+  "author": {
+    "name": "Léo Durillon"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "bin": {
+    "myapp": "dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "module": "index.ts",
+  "types": "./dist/index.d.ts",
+  "type": "module",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "bun-plugin-dts": "^0.2.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
