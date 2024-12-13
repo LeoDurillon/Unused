@@ -23,22 +23,34 @@ export default class ImporterCheck {
     const imports = await this.getImportsLine(entry);
     let checkedPath: Set<string> = new Set();
     for (const imp of imports) {
+      if (imp.endsWith("routes")) continue;
       if (imp.startsWith("~/edgedb")) continue;
       if (!imp) {
         continue;
       }
+
       const fullPath = this.parsePath(imp, entry);
       const goBackLength = this.countGoBack(fullPath);
       const path = fullPath.match(/[(\.\.\/)]+(\/.+)/);
+
       if (!path) {
         continue;
       }
-      const file = this.list.find((file) =>
-        file.path.split(".").slice(0, -1).join(".").endsWith(path[1])
+      const file = this.list.find(
+        (file) =>
+          file.path.includes(
+            entry
+              .slice(this.folder.length)
+              .split("/")
+              .slice(0, 0 - goBackLength)
+              .join("/")
+          ) && file.path.split(".").slice(0, -1).join(".").endsWith(path[1])
       );
+
       if (!file) {
         continue;
       }
+
       checkedPath.add(file.path);
       const nextPath = `${this.goBack(entry, goBackLength)}${this.goBack(
         path[1],
@@ -67,6 +79,7 @@ export default class ImporterCheck {
     const filteredShortCut = this.shortcut.filter((e) =>
       path.startsWith(e.short)
     );
+
     const shortcut = filteredShortCut.sort((a, b) =>
       a.short.length > b.short.length ? -1 : 1
     )[0];
@@ -79,6 +92,7 @@ export default class ImporterCheck {
   parsePath(path: string, currentPath: string) {
     if (!path.startsWith("~")) return path;
     const fullPathSplitted = this.findMatchingShortcut(path, currentPath);
+
     const splittedCurrent = currentPath.split("/");
     const finalPath: string[] = [];
     for (let i = 0; i < fullPathSplitted.length; i++) {

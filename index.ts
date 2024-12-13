@@ -9,7 +9,9 @@ async function check(
   let checkFiles: Set<string> = new Set();
 
   for (const file of routerFiles) {
-    const newlychecked = await checker.checkIsUsed(parentFolder + file.path);
+    const newlychecked = await checker.checkIsUsed(
+      `${parentFolder}${file.path}`.replaceAll("//", "/")
+    );
     checkFiles = checkFiles.union(newlychecked);
   }
 
@@ -21,18 +23,22 @@ const excludedFiles = new Set([
   "entry.ssr.tsx",
   "entry.dev.tsx",
   "entry.preview.tsx",
-  "root.tsx",
+  "service-worker.ts",
   "router-head.tsx",
+  "tailwind.config.ts",
+  "tailwind.config.js",
+  "vite.config.ts",
+  "vite.config.js",
+  "postcss.config.js",
 ]);
 
 const args = Parser.generate({
-  name: "ts-reverse-build",
+  name: "unused",
   help: {
     name: "--help",
     short: "-h",
   },
   path: true,
-  schema: {},
 });
 
 if (typeof args === "string") {
@@ -50,12 +56,19 @@ console.log(`Found ${fileList.length} files`);
 console.log("Search for unused files...");
 const routerFiles = fileList.filter(
   (e) =>
+    e.path.endsWith("root.tsx") ||
     e.path.endsWith("index.tsx") ||
     e.path.endsWith("layout.tsx") ||
-    e.path.endsWith("index.ts")
+    e.path.endsWith("index.ts") ||
+    (e.path.includes("index@") && e.path.endsWith(".tsx")) ||
+    (e.path.includes("layout-") && e.path.endsWith(".tsx")) ||
+    (e.path.includes("plugin-") && e.path.endsWith(".tsx"))
 );
 fileList = fileList.filter(
-  (e) => !excludedFiles.has(e.name) && e.name.split(".").length > 1
+  (e) =>
+    !excludedFiles.has(e.name) &&
+    e.name.split(".").length > 1 &&
+    !(e.path.startsWith("/dist") || e.path.startsWith("/server"))
 );
 const checker = new ImporterCheck(fileList, shortCuts, parentFolder);
 const checkFiles = await check(parentFolder, checker, routerFiles);
@@ -63,9 +76,13 @@ const checkFiles = await check(parentFolder, checker, routerFiles);
 const unusedFile = fileList.filter(
   (e) =>
     !(
+      e.path.endsWith("root.tsx") ||
       e.path.endsWith("index.tsx") ||
       e.path.endsWith("layout.tsx") ||
-      e.path.endsWith("index.ts")
+      e.path.endsWith("index.ts") ||
+      (e.path.includes("index@") && e.path.endsWith(".tsx")) ||
+      (e.path.includes("layout-") && e.path.endsWith(".tsx")) ||
+      (e.path.includes("plugin-") && e.path.endsWith(".tsx"))
     ) && !checkFiles.has(e.path)
 );
 
