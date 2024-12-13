@@ -24,7 +24,7 @@ export default class ImporterCheck {
     let checkedPath: Set<string> = new Set();
     for (const imp of imports) {
       if (imp.endsWith("routes")) continue;
-      if (imp.startsWith("~/edgedb")) continue;
+      if (imp.startsWith("~/edgedb") || imp.includes("dbschema")) continue;
       if (!imp) {
         continue;
       }
