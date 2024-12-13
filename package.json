@@ -1,6 +1,6 @@
 {
   "name": "@leodurillon/unused",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scripts": {
     "build": "bun ./build.config.ts",
     "test": "bun test"
@@ -12,7 +12,7 @@
     "dist/*"
   ],
   "bin": {
-    "myapp": "dist/index.js"
+    "unused": "dist/index.js"
   },
   "main": "./dist/index.js",
   "module": "index.ts",
