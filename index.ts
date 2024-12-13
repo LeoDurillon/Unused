@@ -60,6 +60,7 @@ const routerFiles = fileList.filter(
     e.path.endsWith("index.tsx") ||
     e.path.endsWith("layout.tsx") ||
     e.path.endsWith("index.ts") ||
+    e.path.endsWith("layout.ts") ||
     (e.path.includes("index@") && e.path.endsWith(".tsx")) ||
     (e.path.includes("layout-") && e.path.endsWith(".tsx")) ||
     (e.path.includes("plugin-") && e.path.endsWith(".tsx"))
